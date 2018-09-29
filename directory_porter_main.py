@@ -8,12 +8,13 @@ from directory_porter_ui import Ui_MainWindow
 
 class Porter(Ui_MainWindow, QtWidgets.QMainWindow):
     def __init__(self, window):
-        self.__version__ = '0.1.0'
+        self.__version__ = '0.1.1'
         self.__author__ = 'ZhZYX (i@zhzyx.me)'
 
         QtWidgets.QMainWindow.__init__(self, parent=None)
-
-        debug = True  # 以管理员重启就无法被 debugger 追踪到了, 因此加一个选项
+        
+        # 以管理员重启就无法被 debugger 追踪到了, 因此加一个命令行选项
+        debug = True if '--debug' in sys.argv else False
         if not ctypes.windll.shell32.IsUserAnAdmin() and not debug:  # 检查是不是管理员权限
             QtWidgets.QMessageBox.warning(self, '权限不足', '权限不足: 应用将重新以管理员权限启动.',
                                           QtWidgets.QMessageBox.Yes)
@@ -95,6 +96,7 @@ class Porter(Ui_MainWindow, QtWidgets.QMainWindow):
         except Exception as e:
             self.warning('删除文件夹出错',
                          f'删除文件夹 "{dir_path}" 时发生错误: {str(e)}, 请手动移除或重新指定位置.')
+            os.startfile(os.path.split(dir_path)[0])
             return False
         else:
             return True
